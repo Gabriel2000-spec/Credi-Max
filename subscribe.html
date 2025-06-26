@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pago y Sabor - Suscripción</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d47a1, #1976d2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        .subscribe-container {
+            background-color: #0b3d91;
+            padding: 40px 50px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(25, 118, 210, 0.7);
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffeb3b;
+        }
+
+        h2 {
+            font-weight: 400;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #fffde7;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            border: 2px solid #2196f3;
+            border-radius: 8px;
+            background-color: #0b3d91;
+            color: #e3f2fd;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #ffeb3b;
+            box-shadow: 0 0 10px #ffeb3b;
+            font-size: 1.4rem;
+            background-color: #1565c0;
+            color: #fff;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            background-color: #ffeb3b;
+            color: #0b3d91;
+            box-shadow: 0 0 10px #ffeb3b;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #fdd835;
+            box-shadow: 0 0 20px #fdd835;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .error-message {
+            color: #ff5252;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: -20px;
+            margin-bottom: 10px;
+            display: none;
+            text-align: left;
+        }
+
+        .success-message {
+            color: #76ff03;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: -20px;
+            margin-bottom: 10px;
+            display: none;
+            text-align: center;
+        }
+
+        .back-login {
+            margin-top: 20px;
+            color: #90caf9;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 1rem;
+        }
+
+        .back-login:hover {
+            color: #ffeb3b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="subscribe-container">
+    <h1>Pago y Sabor</h1>
+    <h2>Suscripción de Usuario</h2>
+    <form id="subscribe-form" novalidate>
+        <input type="text" id="new-usuario" placeholder="Nuevo usuario" required />
+        <input type="password" id="new-contrasena" placeholder="Nueva contraseña" required />
+        <div class="error-message" id="error-msg"></div>
+        <div class="success-message" id="success-msg">Usuario creado con éxito. Redirigiendo al login...</div>
+        <button type="submit">Suscribirse</button>
+    </form>
+    <div class="back-login" id="back-login">Volver al Login</div>
+</div>
+
+<script>
+    const subscribeForm = document.getElementById('subscribe-form');
+    const errorMsg = document.getElementById('error-msg');
+    const successMsg = document.getElementById('success-msg');
+    const backLogin = document.getElementById('back-login');
+
+    subscribeForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const nuevoUsuario = document.getElementById('new-usuario').value.trim();
+        const nuevaContrasena = document.getElementById('new-contrasena').value;
+
+        errorMsg.style.display = 'none';
+        successMsg.style.display = 'none';
+
+        if (nuevoUsuario.length < 3) {
+            errorMsg.textContent = 'El usuario debe tener al menos 3 caracteres.';
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        if (nuevaContrasena.length < 5) {
+            errorMsg.textContent = 'La contraseña debe tener al menos 5 caracteres.';
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        let usuarios = JSON.parse(localStorage.getItem('usuarios')) || {};
+
+        if (usuarios[nuevoUsuario]) {
+            errorMsg.textContent = 'El usuario ya existe. Por favor elige otro.';
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        // Guardar nuevo usuario
+        usuarios[nuevoUsuario] = nuevaContrasena;
+        localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+        successMsg.style.display = 'block';
+
+        // Limpiar formulario
+        subscribeForm.reset();
+
+        // Redirigir al login después de 4 segundos
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 2000);
+    });
+
+    backLogin.addEventListener('click', () => {
+        window.location.href = 'index.html';
+    });
+</script>
+
+</body>
+</html>

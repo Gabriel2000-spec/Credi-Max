@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <title>Congelador Omega</title>
+    <style>
+        /* Reset básico */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px 10px;
+            background-color: #1f2937; /* fondo oscuro serio */
+            color: #f9fafb; /* texto claro */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h1 {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #3b82f6; /* azul fuerte */
+            max-width: 90vw;
+        }
+        .container {
+            background-color: #111827; /* casi negro */
+            border-radius: 12px;
+            padding: 20px;
+            width: 90vw;
+            max-width: 400px;
+            box-shadow: 0 8px 20px rgba(59,130,246,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .image-container {
+            width: 100%;
+            height: 250px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid #3b82f6;
+            margin-bottom: 20px;
+            background-color: #374151; /* gris oscuro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            resize: vertical;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            font-family: inherit;
+            margin-bottom: 20px;
+            background-color: #374151;
+            color: #f9fafb;
+            box-shadow: inset 0 0 5px #3b82f6;
+        }
+        textarea::placeholder {
+            color: #9ca3af;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        button, label.file-upload {
+            flex: 1 1 45%;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 0;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            user-select: none;
+            transition: background-color 0.3s ease;
+        }
+        button:hover, label.file-upload:hover {
+            background-color: #2563eb;
+        }
+        button:active, label.file-upload:active {
+            background-color: #1d4ed8;
+        }
+        button.clear {
+            background-color: #ef4444;
+        }
+        button.clear:hover {
+            background-color: #dc2626;
+        }
+        button.clear:active {
+            background-color: #b91c1c;
+        }
+        button.orange {
+            background-color: #f97316; /* naranja */
+        }
+        button.orange:hover {
+            background-color: #ea580c;
+        }
+        button.orange:active {
+            background-color: #c2410c;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+            .container {
+                width: 95vw;
+            }
+            button, label.file-upload {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Congelador de heladería marca Omega</h1>
+    <div class="container">
+        <div class="image-container" id="image-container">
+            <img src="" alt="Congelador Omega Integrale" id="congelador-img" />
+            <span id="placeholder-text" style="color:#9ca3af;">No hay imagen cargada</span>
+        </div>
+        <textarea id="descripcion" placeholder="Escribe aquí la descripción del congelador..."></textarea>
+        <div class="buttons">
+            <label for="file-upload" class="file-upload" title="Subir imagen">
+                📁 Agregar archivo
+            </label>
+            <input type="file" id="file-upload" accept="image/*" />
+            <button id="guardar-btn">Guardar información</button>
+            <button id="limpiar-btn" class="clear">Limpiar página</button>
+            <button id="page-btn" class="orange">Volver a datos de crédito</button>
+        </div>
+    </div>
+
+    <script>
+        const descripcion = document.getElementById('descripcion');
+        const guardarBtn = document.getElementById('guardar-btn');
+        const limpiarBtn = document.getElementById('limpiar-btn');
+        const fileUpload = document.getElementById('file-upload');
+        const congeladorImg = document.getElementById('congelador-img');
+        const placeholderText = document.getElementById('placeholder-text');
+        const pageBtn = document.getElementById('page-btn');
+
+        // Cargar datos guardados al iniciar
+        function cargarDatos() {
+            const textoGuardado = localStorage.getItem('descripcionCongelador');
+            const imagenGuardada = localStorage.getItem('imagenCongelador');
+
+            if (textoGuardado) {
+                descripcion.value = textoGuardado;
+            }
+            if (imagenGuardada) {
+                congeladorImg.src = imagenGuardada;
+                placeholderText.style.display = 'none';
+                congeladorImg.style.display = 'block';
+            } else {
+                congeladorImg.style.display = 'none';
+                placeholderText.style.display = 'flex';
+            }
+        }
+
+        // Guardar descripción e imagen en almacenamiento local
+        guardarBtn.addEventListener('click', () => {
+            const texto = descripcion.value.trim();
+            if (!texto) {
+                alert('La descripción está vacía, no se guardó nada.');
+                return;
+            }
+            localStorage.setItem('descripcionCongelador', texto);
+
+            if (congeladorImg.src && congeladorImg.style.display !== 'none') {
+                localStorage.setItem('imagenCongelador', congeladorImg.src);
+            }
+
+            alert('Información guardada correctamente.');
+        });
+
+        // Limpiar datos y página
+        limpiarBtn.addEventListener('click', () => {
+            if (confirm('¿Quieres borrar la descripción, la imagen y limpiar la página?')) {
+                descripcion.value = '';
+                congeladorImg.src = '';
+                congeladorImg.style.display = 'none';
+                placeholderText.style.display = 'flex';
+                localStorage.removeItem('descripcionCongelador');
+                localStorage.removeItem('imagenCongelador');
+            }
+        });
+
+        // Manejar subida de archivo
+        fileUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                alert('Por favor, selecciona un archivo de imagen válido.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                congeladorImg.src = e.target.result;
+                congeladorImg.style.display = 'block';
+                placeholderText.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Botón para ir a page.html
+        pageBtn.addEventListener('click', () => {
+            window.location.href = 'informacionbeneficiario.html';
+        });
+
+        window.onload = cargarDatos;
+    </script>
+</body>
+</html>

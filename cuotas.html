@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crédito 36 cuotas Editable</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 20px;
+    }
+    h2 {
+      color: #ff3b3f;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: right;
+    }
+    th {
+      background-color: #ff3b3f;
+      color: white;
+    }
+    td:first-child, th:first-child {
+      text-align: center;
+    }
+    input {
+      width: 80px;
+      background: #222;
+      border: none;
+      color: #e0e0e0;
+      text-align: right;
+      font-size: 1em;
+      padding: 4px;
+    }
+    input:focus {
+      outline: 2px solid #ff3b3f;
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.9em;
+      color: #888;
+    }
+    .total {
+      background-color: #ff3b3f;
+      color: white;
+      font-weight: bold;
+    }
+    button {
+      background-color: #ff3b3f;
+      border: none;
+      padding: 10px 20px;
+      color: white;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    button:hover {
+      background-color: #e23335;
+    }
+  </style>
+</head>
+<body>
+  <h2>Cuotas pago de crédito</h2>
+  <button id="btnPague">Volver a entrega</button>
+  <table id="tablaCuotas">
+    <thead>
+      <tr>
+        <th>Cuota</th>
+        <th>Interés de Gracia</th>
+        <th>Interés Ordinario</th>
+        <th>Capital a Amortizar</th>
+        <th>Total Cuota a Cancelar</th>
+        <th>Saldo de Deuda</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Filas generadas por JS -->
+    </tbody>
+  </table>
+  <div class="footer">
+    Precio del crédito: <strong>389.29</strong> | Total a pagar: <strong id="totalPagar">0.00</strong>
+  </div>
+
+  <script>
+    const precioCredito = 389.29;
+    const numCuotas = 36;
+    const interesGraciaPrimeraCuota = 0.018; // 1.8%
+    const interesOrdinario = 0.122; // 12.20%
+
+    const tbody = document.querySelector("#tablaCuotas tbody");
+    const totalPagarElem = document.getElementById("totalPagar");
+    const btnPague = document.getElementById("btnPague");
+
+    function crearFila(cuota, data = {}) {
+      const tr = document.createElement("tr");
+
+      const ig = data.interesGracia !== undefined ? data.interesGracia : 0;
+      const io = data.interesOrd !== undefined ? data.interesOrd : 0;
+      const cap = data.capital !== undefined ? data.capital : 0;
+      const total = data.total !== undefined ? data.total : 0;
+      const saldo = data.saldo !== undefined ? data.saldo : 0;
+
+      tr.innerHTML = `
+        <td>${cuota}</td>
+        <td>${cuota === 1 ? `<input type="number" min="0" step="0.01" class="ig-input" value="${ig.toFixed(2)}" ${cuota !== 1 ? "readonly" : ""}>` : `<input type="number" min="0" step="0.01" class="ig-input" value="0" readonly>`}</td>
+        <td><input type="number" min="0" step="0.01" class="io-input" value="${io.toFixed(2)}" ${cuota === 1 ? "readonly" : ""}></td>
+        <td><input type="number" min="0" step="0.01" class="cap-input" value="${cap.toFixed(2)}" ${cuota === 1 ? "readonly" : ""}></td>
+        <td class="total-cell">${total.toFixed(2)}</td>
+        <td class="saldo-cell">${saldo.toFixed(2)}</td>
+      `;
+
+      return tr;
+    }
+
+    function cargarTabla() {
+      tbody.innerHTML = "";
+      let datosGuardados = localStorage.getItem("credito36cuotas");
+      let datos = [];
+
+      if (datosGuardados) {
+        datos = JSON.parse(datosGuardados);
+        datos.forEach((fila, i) => {
+          const tr = crearFila(i + 1, fila);
+          tbody.appendChild(tr);
+        });
+      } else {
+        let saldoDeuda = precioCredito;
+        for (let i = 1; i <= numCuotas; i++) {
+          let interesGracia = 0;
+          let interesOrd = 0;
+          let capitalAmortizar = 0;
+          let cuotaTotal = 0;
+
+          if (i === 1) {
+            interesGracia = saldoDeuda * interesGraciaPrimeraCuota;
+            capitalAmortizar = 0;
+            cuotaTotal = interesGracia;
+          } else {
+            interesOrd = saldoDeuda * interesOrdinario;
+            capitalAmortizar = precioCredito / (numCuotas - 1);
+            cuotaTotal = interesOrd + capitalAmortizar;
+            saldoDeuda -= capitalAmortizar;
+          }
+
+          const tr = crearFila(i, {
+            interesGracia,
+            interesOrd,
+            capital: capitalAmortizar,
+            total: cuotaTotal,
+            saldo: saldoDeuda < 0 ? 0 : saldoDeuda
+          });
+          tbody.appendChild(tr);
+        }
+      }
+      asignarListenersInputs();
+      calcular();
+    }
+
+    function asignarListenersInputs() {
+      const inputs = tbody.querySelectorAll("input");
+      inputs.forEach(input => {
+        input.addEventListener("input", () => {
+          calcular();
+        });
+      });
+    }
+
+    function calcular() {
+      let saldoDeuda = precioCredito;
+      let totalPagar = 0;
+
+      for (let i = 0; i < tbody.rows.length; i++) {
+        const fila = tbody.rows[i];
+
+        const igInput = fila.querySelector(".ig-input");
+        const ioInput = fila.querySelector(".io-input");
+        const capInput = fila.querySelector(".cap-input");
+        const totalCell = fila.querySelector(".total-cell");
+        const saldoCell = fila.querySelector(".saldo-cell");
+
+        let interesGracia = parseFloat(igInput.value) || 0;
+        let interesOrd = parseFloat(ioInput.value) || 0;
+        let capital = parseFloat(capInput.value) || 0;
+
+        if (i === 0) {
+          interesOrd = 0;
+          capital = 0;
+          ioInput.value = "0.00";
+          capInput.value = "0.00";
+        } else {
+          interesGracia = 0;
+          igInput.value = "0.00";
+        }
+
+        if (capital > saldoDeuda) {
+          capital = saldoDeuda;
+          capInput.value = capital.toFixed(2);
+        }
+
+        let cuotaTotal = interesGracia + interesOrd + capital;
+
+        saldoDeuda -= capital;
+        if (saldoDeuda < 0) saldoDeuda = 0;
+
+        totalCell.textContent = cuotaTotal.toFixed(2);
+        saldoCell.textContent = saldoDeuda.toFixed(2);
+
+        totalPagar += cuotaTotal;
+      }
+
+      totalPagarElem.textContent = totalPagar.toFixed(2);
+
+      guardarDatos();
+    }
+
+    function guardarDatos() {
+      const filas = [];
+      for (let i = 0; i < tbody.rows.length; i++) {
+        const fila = tbody.rows[i];
+        filas.push({
+          interesGracia: parseFloat(fila.querySelector(".ig-input").value) || 0,
+          interesOrd: parseFloat(fila.querySelector(".io-input").value) || 0,
+          capital: parseFloat(fila.querySelector(".cap-input").value) || 0,
+          total: parseFloat(fila.querySelector(".total-cell").textContent) || 0,
+          saldo: parseFloat(fila.querySelector(".saldo-cell").textContent) || 0,
+        });
+      }
+      localStorage.setItem("credito36cuotas", JSON.stringify(filas));
+    }
+
+    btnPague.addEventListener("click", () => {
+      window.location.href = "entrega.html";
+    });
+
+    cargarTabla();
+  </script>
+</body>
+</html>

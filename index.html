@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pago y Sabor - Login</title>
+    <style>
+        /* Reset básico */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d47a1, #1976d2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        .login-container {
+            background-color: #0b3d91;
+            padding: 40px 50px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(25, 118, 210, 0.7);
+            width: 360px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffeb3b; /* amarillo brillante */
+        }
+
+        h2 {
+            font-weight: 400;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #fffde7;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            border: 2px solid #2196f3;
+            border-radius: 8px;
+            background-color: #0b3d91;
+            color: #e3f2fd;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #ffeb3b;
+            box-shadow: 0 0 10px #ffeb3b;
+            font-size: 1.4rem;
+            background-color: #1565c0;
+            color: #fff;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 28px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #login-btn {
+            background-color: #ffeb3b;
+            color: #0b3d91;
+            box-shadow: 0 0 8px #ffeb3b;
+        }
+
+        #login-btn:hover {
+            background-color: #fdd835;
+            box-shadow: 0 0 15px #fdd835;
+        }
+
+        #subscribe-btn {
+            background-color: transparent;
+            color: #90caf9;
+            border: 2px solid #90caf9;
+            box-shadow: none;
+        }
+
+        #subscribe-btn:hover {
+            background-color: #90caf9;
+            color: #0b3d91;
+            box-shadow: 0 0 8px #90caf9;
+        }
+
+        /* Efecto para botón pulsado */
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* Mensaje de error */
+        .error-message {
+            color: #ff5252;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: -20px;
+            margin-bottom: 10px;
+            display: none;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h1>Pago y Sabor</h1>
+    <h2>Login moderno</h2>
+    <form id="login-form" novalidate>
+        <input type="text" id="usuario" placeholder="Usuario" required />
+        <input type="password" id="contrasena" placeholder="Contraseña" required />
+        <div class="error-message" id="error-msg">Usuario o contraseña incorrectos</div>
+        <div class="buttons">
+            <button type="button" id="subscribe-btn">Suscripción</button>
+            <button type="submit" id="login-btn">Entrar</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Usuarios almacenados en localStorage (clave: usuario, valor: contraseña)
+    // Si no hay usuarios, se crea uno por defecto: usuario "admin", contraseña "12345"
+    if (!localStorage.getItem('usuarios')) {
+        const usuariosPorDefecto = { "admin": "12345" };
+        localStorage.setItem('usuarios', JSON.stringify(usuariosPorDefecto));
+    }
+
+    const form = document.getElementById('login-form');
+    const errorMsg = document.getElementById('error-msg');
+    const subscribeBtn = document.getElementById('subscribe-btn');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const usuario = document.getElementById('usuario').value.trim();
+        const contrasena = document.getElementById('contrasena').value;
+
+        const usuarios = JSON.parse(localStorage.getItem('usuarios'));
+
+        if (usuarios[usuario] && usuarios[usuario] === contrasena) {
+            // Guardar sesión en localStorage
+            localStorage.setItem('usuarioLogueado', usuario);
+            // Ocultar mensaje de error si estaba visible
+            errorMsg.style.display = 'none';
+            // Redirigir a page.html
+            window.location.href = 'entrega.html';
+        } else {
+            // Mostrar mensaje de error
+            errorMsg.style.display = 'block';
+        }
+    });
+
+    subscribeBtn.addEventListener('click', function() {
+        // Redirigir a la página de suscripción
+        window.location.href = 'subscribe.html';
+    });
+</script>
+
+</body>
+</html>

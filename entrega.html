@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nota de Entrega de Crédito Proveedor Fondo Bolívar</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 0 10px 30px;
+  }
+  header {
+    background-color: #003366;
+    padding: 15px 10px;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 20px;
+  }
+  section {
+    margin: 15px 0;
+    background-color: #004080;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  h2 {
+    border-bottom: 2px solid #0059b3;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+  }
+  p, .info-group {
+    margin: 5px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  th, td {
+    border: 1px solid #0059b3;
+    padding: 8px;
+    text-align: left;
+    background-color: #003366;
+    color: #cce0ff;
+  }
+  th {
+    background-color: #00264d;
+  }
+  td[contenteditable="true"] {
+    background-color: #004d99;
+    cursor: text;
+  }
+  .buttons-container {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  button {
+    flex: 1 1 120px;
+    padding: 15px 20px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    transition: filter 0.3s ease;
+    text-align: center;
+  }
+  button:hover {
+    filter: brightness(85%);
+  }
+  .btn-rojo {
+    background-color: #d32f2f;
+  }
+  .btn-verde {
+    background-color: #388e3c;
+  }
+  .btn-amarillo {
+    background-color: #fbc02d;
+    color: #000;
+  }
+  .btn-guardar {
+    background-color: #0059b3;
+  }
+  .btn-limpiar {
+    background-color: #b30000;
+  }
+  @media (max-width: 600px) {
+    body {
+      padding: 5px;
+    }
+    header {
+      font-size: 1em;
+      padding: 10px 5px;
+    }
+    section {
+      padding: 10px 5px;
+    }
+    th, td {
+      font-size: 0.9em;
+      padding: 6px;
+    }
+    .buttons-container {
+      flex-direction: column;
+    }
+    button {
+      flex: none;
+      width: 100%;
+      font-size: 1.2em;
+      padding: 14px 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>Nota de Entrega de Crédito Proveedor Fondo Bolívar</header>
+
+<section>
+  <h2>Datos del Beneficiario</h2>
+  <div class="info-group"><strong>Beneficiario:</strong> Juan Rondón</div>
+  <div class="info-group"><strong>Número de Teléfono:</strong> 0426 895 7207</div>
+  <div class="info-group"><strong>Cédula de Identidad:</strong> 16 135 133</div>
+  <div class="info-group"><strong>Parroquia:</strong> La Sabanita</div>
+  <div class="info-group"><strong>Municipio:</strong> Angostura del Orinoco</div>
+  <div class="info-group"><strong>Dirección de Habitación:</strong> Carrera 5, Casa sin número, Barrio Brisa del Este 1</div>
+</section>
+
+<section>
+  <h2>Detalles del Rubro</h2>
+  <div class="info-group"><strong>Rubro:</strong> Heladería</div>
+  <div class="info-group"><strong>Máquina y Equipo:</strong> 1 Congelador/Freezer</div>
+  <div class="info-group"><strong>Descripción:</strong> Marca Omega, Modelo OCH 99 W</div>
+  <div class="info-group"><strong>Serial Número:</strong> 540 - P61 50 80 1 - 4612 - 10 40 639</div>
+  <div class="info-group"><strong>Color:</strong> Blanco</div>
+</section>
+
+<section>
+  <h2>Datos de Control</h2>
+  <div class="info-group"><strong>Conforme Beneficiario C.I.:</strong> 16 135 133</div>
+  <div class="info-group"><strong>Gerente de Bienes:</strong> (firma)</div>
+  <div class="info-group"><strong>Revisado por:</strong> Franmagly Ron</div>
+</section>
+
+<section>
+  <h2>Información Editable y Guardada Localmente</h2>
+  <table id="editableTable">
+    <thead>
+      <tr>
+        <th>Campo</th>
+        <th>Información</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Observaciones</td>
+        <td contenteditable="true"></td>
+      </tr>
+      <tr>
+        <td>Fecha de Entrega</td>
+        <td contenteditable="true"></td>
+      </tr>
+      <tr>
+        <td>Estado del Equipo</td>
+        <td contenteditable="true"></td>
+      </tr>
+      <tr>
+        <td>Comentarios Adicionales</td>
+        <td contenteditable="true"></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="buttons-container">
+    <button class="btn-guardar" id="saveBtn">Guardar Información</button>
+    <button class="btn-limpiar" id="clearBtn">Limpiar Información</button>
+    <button class="btn-rojo" onclick="location.href='control.html'">Control de pagos</button>
+    <button class="btn-verde" onclick="location.href='cuotas.html'">Cuotas</button>
+    <button class="btn-amarillo" onclick="location.href='informacionbeneficiario.html'""''">Datos de crédito</button>
+  </div>
+</section>
+
+<script>
+  const table = document.getElementById('editableTable');
+  const saveBtn = document.getElementById('saveBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const storageKey = 'notaEntregaCreditoProveedor';
+
+  // Cargar datos guardados en localStorage al cargar la página
+  window.onload = function() {
+    const savedData = localStorage.getItem(storageKey);
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      const rows = table.querySelectorAll('tbody tr');
+      rows.forEach((row, index) => {
+        const cell = row.cells[1];
+        if (parsedData[index]) {
+          cell.textContent = parsedData[index];
+        }
+      });
+    }
+  };
+
+  // Guardar datos en localStorage al hacer clic en guardar
+  saveBtn.addEventListener('click', () => {
+    const rows = table.querySelectorAll('tbody tr');
+    let dataToSave = [];
+    rows.forEach(row => {
+      dataToSave.push(row.cells[1].textContent.trim());
+    });
+    localStorage.setItem(storageKey, JSON.stringify(dataToSave));
+    alert('Información guardada correctamente.');
+  });
+
+  // Limpiar datos y localStorage
+  clearBtn.addEventListener('click', () => {
+    if (confirm('¿Estás seguro de que deseas limpiar la información guardada?')) {
+      const rows = table.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+        row.cells[1].textContent = '';
+      });
+      localStorage.removeItem(storageKey);
+      alert('Información limpiada.');
+    }
+  });
+</script>
+
+</body>
+</html>

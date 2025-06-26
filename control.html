@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Control de Pagos</title>
+<style>
+  /* Reset y base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background: #1e1e1e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    color: #ff6600;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+  }
+  .table-container {
+    overflow-x: auto;
+    box-shadow: 0 0 10px #ff6600aa;
+    border-radius: 6px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    background: #2c2c2c;
+    min-width: 900px; /* para scroll en móvil */
+  }
+  th, td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #444;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  th {
+    background: #ff6600;
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  td[contenteditable="true"] {
+    background: #3a3a3a;
+    outline: none;
+    cursor: text;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  td[contenteditable="true"]:focus {
+    background: #ff661a66;
+    box-shadow: 0 0 5px #ff6600;
+  }
+  .btn {
+    background-color: #ff6600;
+    border: none;
+    color: #fff;
+    padding: 12px 18px;
+    margin: 5px 10px 5px 0;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+  }
+  .btn:hover {
+    background-color: #e65500;
+  }
+  .btn:disabled {
+    background-color: #aa4400;
+    cursor: not-allowed;
+  }
+  .buttons-container {
+    text-align: center;
+    margin-bottom: 20px;
+    overflow-x: auto;
+  }
+  /* Botón eliminar fila */
+  .btn-delete {
+    background-color: #cc3300;
+    font-size: 14px;
+    padding: 6px 10px;
+    margin: 0 auto;
+    display: block;
+    white-space: nowrap;
+  }
+
+  /* Responsive */
+  @media(max-width: 768px) {
+    h1 {
+      font-size: 1.5rem;
+    }
+    th, td {
+      font-size: 0.8rem;
+      padding: 8px 6px;
+    }
+    .btn {
+      padding: 10px 14px;
+      font-size: 14px;
+      margin: 5px 5px 5px 0;
+    }
+  }
+  @media(max-width: 400px) {
+    body {
+      padding: 10px 8px;
+    }
+    .btn {
+      padding: 8px 12px;
+      font-size: 13px;
+      margin: 4px 4px 4px 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>Control de Pagos</h1>
+
+<div class="buttons-container">
+  <button class="btn" id="addRowBtn">Registrar Información</button>
+  <button class="btn" id="sendWhatsAppBtn">Enviar a WhatsApp</button>
+  <button class="btn" id="goPageBtn">Volver a entrega</button>
+</div>
+
+<div class="table-container">
+  <table id="paymentsTable" aria-label="Tabla de control de pagos">
+    <thead>
+      <tr>
+        <th>Nombre del Banco</th>
+        <th>Número de Cuenta</th>
+        <th>Número de Referencia</th>
+        <th>Día</th>
+        <th>Mes</th>
+        <th>Año</th>
+        <th>Cantidad (USD)</th>
+        <th>Tipo de Cambio (Bs)</th>
+        <th>Cantidad Depositada (Bs)</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Filas generadas dinámicamente -->
+    </tbody>
+  </table>
+</div>
+
+<script>
+  const tableBody = document.querySelector('#paymentsTable tbody');
+  const addRowBtn = document.getElementById('addRowBtn');
+  const sendWhatsAppBtn = document.getElementById('sendWhatsAppBtn');
+  const goPageBtn = document.getElementById('goPageBtn');
+  const localStorageKey = 'paymentsData';
+
+  // Cargar datos desde localStorage
+  function loadData() {
+    const data = localStorage.getItem(localStorageKey);
+    if (data) {
+      const payments = JSON.parse(data);
+      payments.forEach(payment => addRow(payment));
+    } else {
+      addRow();
+    }
+  }
+
+  // Guardar datos en localStorage
+  function saveData() {
+    const rows = [...tableBody.querySelectorAll('tr')];
+    const payments = rows.map(row => {
+      const cells = row.querySelectorAll('td');
+      return {
+        banco: cells[0].textContent.trim(),
+        cuenta: cells[1].textContent.trim(),
+        referencia: cells[2].textContent.trim(),
+        dia: cells[3].textContent.trim(),
+        mes: cells[4].textContent.trim(),
+        año: cells[5].textContent.trim(),
+        cantidadUSD: cells[6].textContent.trim(),
+        tipoCambio: cells[7].textContent.trim(),
+        cantidadBs: cells[8].textContent.trim()
+      };
+    });
+    localStorage.setItem(localStorageKey, JSON.stringify(payments));
+  }
+
+  // Crear celda editable
+  function createEditableCell(text) {
+    const td = document.createElement('td');
+    td.contentEditable = 'true';
+    td.textContent = text;
+    td.spellcheck = false;
+    return td;
+  }
+
+  // Calcular cantidad depositada en Bs
+  function calculateBs(cantidadUSD, tipoCambio) {
+    const usd = parseFloat(cantidadUSD);
+    const cambio = parseFloat(tipoCambio);
+    if (isNaN(usd) || isNaN(cambio)) return '';
+    return (usd * cambio).toFixed(2);
+  }
+
+  // Crear fila editable y agregar al tbody
+  function addRow(data = {}) {
+    const row = document.createElement('tr');
+
+    const banco = createEditableCell(data.banco || '');
+    const cuenta = createEditableCell(data.cuenta || '');
+    const referencia = createEditableCell(data.referencia || '');
+    const dia = createEditableCell(data.dia || '');
+    const mes = createEditableCell(data.mes || '');
+    const año = createEditableCell(data.año || '');
+    const cantidadUSD = createEditableCell(data.cantidadUSD || '');
+    const tipoCambio = createEditableCell(data.tipoCambio || '');
+
+    const cantidadBs = document.createElement('td');
+    cantidadBs.textContent = calculateBs(data.cantidadUSD, data.tipoCambio);
+    cantidadBs.style.fontWeight = '700';
+
+    const actionTd = document.createElement('td');
+    const delBtn = document.createElement('button');
+    delBtn.textContent = 'Eliminar';
+    delBtn.className = 'btn-delete';
+    delBtn.addEventListener('click', () => {
+      row.remove();
+      saveData();
+    });
+    actionTd.appendChild(delBtn);
+
+    row.append(banco, cuenta, referencia, dia, mes, año, cantidadUSD, tipoCambio, cantidadBs, actionTd);
+
+    // Escuchar cambios para recalcular y guardar
+    [cantidadUSD, tipoCambio].forEach(cell => {
+      cell.addEventListener('input', () => {
+        const usd = parseFloat(cantidadUSD.textContent) || 0;
+        const cambio = parseFloat(tipoCambio.textContent) || 0;
+        cantidadBs.textContent = calculateBs(usd, cambio);
+        saveData();
+      });
+    });
+
+    // Escuchar cambios en otras celdas para guardar
+    [banco, cuenta, referencia, dia, mes, año].forEach(cell => {
+      cell.addEventListener('input', () => {
+        saveData();
+      });
+    });
+
+    tableBody.appendChild(row);
+    saveData();
+  }
+
+  // Enviar datos a WhatsApp
+  function sendToWhatsApp() {
+    const rows = [...tableBody.querySelectorAll('tr')];
+    if (rows.length === 0) {
+      alert('No hay datos para enviar.');
+      return;
+    }
+    let message = 'Control de Pagos:\n\n';
+    rows.forEach((row, i) => {
+      const cells = row.querySelectorAll('td');
+      message += `Pago ${i + 1}:\n`;
+      message += `Banco: ${cells[0].textContent.trim()}\n`;
+      message += `Cuenta: ${cells[1].textContent.trim()}\n`;
+      message += `Referencia: ${cells[2].textContent.trim()}\n`;
+      message += `Fecha: ${cells[3].textContent.trim()}/${cells[4].textContent.trim()}/${cells[5].textContent.trim()}\n`;
+      message += `Cantidad (USD): ${cells[6].textContent.trim()}\n`;
+      message += `Tipo de cambio (Bs): ${cells[7].textContent.trim()}\n`;
+      message += `Cantidad depositada (Bs): ${cells[8].textContent.trim()}\n\n`;
+    });
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappURL = `https://wa.me/?text=${encodedMessage}`;
+    window.open(whatsappURL, '_blank');
+  }
+
+  // Eventos
+  addRowBtn.addEventListener('click', () => {
+    addRow();
+  });
+
+  sendWhatsAppBtn.addEventListener('click', () => {
+    sendToWhatsApp();
+  });
+
+  goPageBtn.addEventListener('click', () => {
+    window.location.href = 'entrega.html';
+  });
+
+  // Cargar datos al iniciar
+  loadData();
+
+</script>
+
+</body>
+</html>

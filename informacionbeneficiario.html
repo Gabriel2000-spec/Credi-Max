@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pago de Crédito - Bolívar Heladería</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      background-color: #b22222; /* rojo Bolívar fuerte */
+      padding: 20px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.5em;
+      border-radius: 6px;
+      margin-bottom: 30px;
+      color: white;
+    }
+    header small {
+      display: block;
+      font-size: 0.8em;
+      margin-top: 4px;
+      font-weight: normal;
+      color: #f4f4f4;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      background-color: #1e1e1e;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #444;
+      text-align: left;
+    }
+    th {
+      background-color: #b22222;
+      color: #fff;
+      font-weight: 600;
+    }
+    td input {
+      width: 100%;
+      padding: 6px 8px;
+      background-color: #2a2a2a;
+      border: none;
+      color: #e0e0e0;
+      font-size: 1em;
+      border-radius: 4px;
+    }
+    td input:focus {
+      outline: 2px solid #b22222;
+      background-color: #3a3a3a;
+    }
+    .info-text {
+      font-size: 1em;
+      color: #ccc;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    button {
+      border: none;
+      padding: 14px 30px;
+      font-size: 1.1em;
+      border-radius: 6px;
+      cursor: pointer;
+      display: block;
+      margin: 10px auto;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+      width: 200px;
+    }
+    #btnPageRed {
+      background-color: #b22222;
+      color: white;
+    }
+    #btnPageRed:hover {
+      background-color: #8b1a1a;
+    }
+    #btnPageGreen {
+      background-color: #228B22; /* verde fuerte */
+      color: white;
+    }
+    #btnPageGreen:hover {
+      background-color: #1c6b1c;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  Congelador Heladería<br />
+  <small>Credito por 3 años</small>
+</header>
+
+<table>
+  <tbody>
+    <tr>
+      <th>Nombre y Apellido Beneficiario</th>
+      <td><input type="text" id="nombre" /></td>
+    </tr>
+    <tr>
+      <th>Cédula</th>
+      <td><input type="text" id="cedula" /></td>
+    </tr>
+    <tr>
+      <th>Fecha de Liquidación</th>
+      <td><input type="date" id="fecha" /></td>
+    </tr>
+    <tr>
+      <th>Capital</th>
+      <td><input type="number" step="0.01" id="capital" /></td>
+    </tr>
+    <tr>
+      <th>Interés Ordinario sobre cuotas (%)</th>
+      <td><input type="number" step="0.01" id="interesOrdinario" /></td>
+    </tr>
+    <tr>
+      <th>Plazo de préstamo (cuotas)</th>
+      <td><input type="number" id="plazo" /></td>
+    </tr>
+    <tr>
+      <th>Cuotas de gracia</th>
+      <td><input type="number" id="cuotasGracia" /></td>
+    </tr>
+    <tr>
+      <th>Interés de gracia</th>
+      <td><input type="number" step="0.01" id="interesGracia" /></td>
+    </tr>
+    <tr>
+      <th>Cuota de capital</th>
+      <td><input type="number" step="0.01" id="cuotaCapital" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="info-text">
+  Sus cuotas vencen los <strong>20 de cada mes</strong>.
+</div>
+
+<button id="btnPageRed">Descripcion</button>
+<button id="btnPageGreen">Volver a entrega</button>
+
+<script>
+  const campos = [
+    "nombre",
+    "cedula",
+    "fecha",
+    "capital",
+    "interesOrdinario",
+    "plazo",
+    "cuotasGracia",
+    "interesGracia",
+    "cuotaCapital"
+  ];
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const datos = localStorage.getItem("datosCredito");
+    if (datos) {
+      const obj = JSON.parse(datos);
+      campos.forEach(id => {
+        if(obj[id] !== undefined) {
+          document.getElementById(id).value = obj[id];
+        }
+      });
+    } else {
+      document.getElementById("nombre").value = "Juan Rondón";
+      document.getElementById("cedula").value = "16135133";
+      document.getElementById("fecha").value = "2024-12-20";
+      document.getElementById("capital").value = "389.29";
+      document.getElementById("interesOrdinario").value = "0.10";
+      document.getElementById("plazo").value = "36";
+      document.getElementById("cuotasGracia").value = "12";
+      document.getElementById("interesGracia").value = "1.08";
+      document.getElementById("cuotaCapital").value = "11.12";
+    }
+  });
+
+  campos.forEach(id => {
+    const input = document.getElementById(id);
+    input.addEventListener("input", () => {
+      const datos = {};
+      campos.forEach(c => {
+        datos[c] = document.getElementById(c).value;
+      });
+      localStorage.setItem("datosCredito", JSON.stringify(datos));
+    });
+  });
+
+  document.getElementById("btnPageRed").addEventListener("click", () => {
+    window.location.href = "foto.html";
+  });
+  document.getElementById("btnPageGreen").addEventListener("click", () => {
+    window.location.href = "entrega.html";
+  });
+</script>
+
+</body>
+</html>
