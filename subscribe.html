@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pago y Sabor - Suscripción</title>
+    <title>Suscripción</title>
     <style>
         * {
             box-sizing: border-box;
@@ -51,6 +51,7 @@
             gap: 25px;
         }
 
+        input[type="email"],
         input[type="text"],
         input[type="password"] {
             padding: 15px 20px;
@@ -63,6 +64,7 @@
             outline: none;
         }
 
+        input[type="email"]:focus,
         input[type="text"]:focus,
         input[type="password"]:focus {
             border-color: #ffeb3b;
@@ -78,124 +80,88 @@
             border-radius: 8px;
             border: none;
             cursor: pointer;
-            font-weight: 700;
             background-color: #ffeb3b;
             color: #0b3d91;
-            box-shadow: 0 0 10px #ffeb3b;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
         }
 
         button:hover {
             background-color: #fdd835;
-            box-shadow: 0 0 20px #fdd835;
-        }
-
-        button:active {
-            transform: scale(0.95);
-        }
-
-        .error-message {
-            color: #ff5252;
-            font-weight: 700;
-            font-size: 1rem;
-            margin-top: -20px;
-            margin-bottom: 10px;
-            display: none;
-            text-align: left;
         }
 
         .success-message {
-            color: #76ff03;
-            font-weight: 700;
-            font-size: 1rem;
-            margin-top: -20px;
-            margin-bottom: 10px;
-            display: none;
-            text-align: center;
-        }
-
-        .back-login {
             margin-top: 20px;
-            color: #90caf9;
-            cursor: pointer;
-            text-decoration: underline;
-            font-size: 1rem;
-        }
-
-        .back-login:hover {
-            color: #ffeb3b;
+            font-size: 1.1rem;
+            color: #cddc39;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
+    <div class="subscribe-container">
+        <h1>Suscríbete</h1>
+        <h2>Recibe todas nuestras novedades</h2>
+        <form id="subscribeForm">
+            <input type="email" id="email" name="email" placeholder="Correo electrónico" required />
+            <input type="text" id="username" name="username" placeholder="Usuario" />
+            <input type="password" id="password" name="password" placeholder="Contraseña" />
+            <button type="submit">Suscribirse</button>
+        </form>
+        <div id="message" class="success-message"></div>
+        
+        
+        
+</body>
 
-<div class="subscribe-container">
-    <h1>Pago y Sabor</h1>
-    <h2>Suscripción de Usuario</h2>
-    <form id="subscribe-form" novalidate>
-        <input type="text" id="new-usuario" placeholder="Nuevo usuario" required />
-        <input type="password" id="new-contrasena" placeholder="Nueva contraseña" required />
-        <div class="error-message" id="error-msg"></div>
-        <div class="success-message" id="success-msg">Usuario creado con éxito. Redirigiendo al login...</div>
-        <button type="submit">Suscribirse</button>
-    </form>
-    <div class="back-login" id="back-login">Volver al Login</div>
-</div>
+        
+        
+        
+    </div>
 
-<script>
-    const subscribeForm = document.getElementById('subscribe-form');
-    const errorMsg = document.getElementById('error-msg');
-    const successMsg = document.getElementById('success-msg');
-    const backLogin = document.getElementById('back-login');
 
-    subscribeForm.addEventListener('submit', function(event) {
-        event.preventDefault();
 
-        const nuevoUsuario = document.getElementById('new-usuario').value.trim();
-        const nuevaContrasena = document.getElementById('new-contrasena').value;
 
-        errorMsg.style.display = 'none';
-        successMsg.style.display = 'none';
 
-        if (nuevoUsuario.length < 3) {
-            errorMsg.textContent = 'El usuario debe tener al menos 3 caracteres.';
-            errorMsg.style.display = 'block';
-            return;
-        }
+    <script>
+        const form = document.getElementById('subscribeForm');
+        const messageDiv = document.getElementById('message');
 
-        if (nuevaContrasena.length < 5) {
-            errorMsg.textContent = 'La contraseña debe tener al menos 5 caracteres.';
-            errorMsg.style.display = 'block';
-            return;
-        }
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
 
-        let usuarios = JSON.parse(localStorage.getItem('usuarios')) || {};
+            const email = form.email.value.trim();
+            const username = form.username.value.trim();
+            const password = form.password.value;
 
-        if (usuarios[nuevoUsuario]) {
-            errorMsg.textContent = 'El usuario ya existe. Por favor elige otro.';
-            errorMsg.style.display = 'block';
-            return;
-        }
+            // Validar correo electrónico básico
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                messageDiv.textContent = 'Por favor, ingresa un correo electrónico válido.';
+                messageDiv.style.color = 'red';
+                return;
+            }
 
-        // Guardar nuevo usuario
-        usuarios[nuevoUsuario] = nuevaContrasena;
-        localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            // Guardar en almacenamiento local
+            const subscriberData = {
+                email: email,
+                username: username,
+                password: password
+            };
 
-        successMsg.style.display = 'block';
+            localStorage.setItem('subscriber', JSON.stringify(subscriberData));
 
-        // Limpiar formulario
-        subscribeForm.reset();
+            messageDiv.textContent = '¡Gracias por suscribirte!';
+            messageDiv.style.color = '#cddc39';
 
-        // Redirigir al login después de 4 segundos
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 2000);
-    });
+            // Limpiar formulario
+            form.reset();
 
-    backLogin.addEventListener('click', () => {
-        window.location.href = 'index.html';
-    });
-</script>
-
+            // Redirigir a login después de 2 segundos
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
+        });
+    </script>
 </body>
 </html>
