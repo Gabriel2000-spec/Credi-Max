@@ -116,9 +116,30 @@
       padding: 14px 0;
     }
   }
+  
+  
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
 </style>
 </head>
 <body>
+    
+    <button id="btnSalir">Salir de la Aplicación</button>
 
 <header>Nota de Entrega de Crédito Proveedor Fondo Bolívar</header>
 
@@ -228,6 +249,13 @@
       alert('Información limpiada.');
     }
   });
+  
+  
+  document.getElementById('btnSalir').addEventListener('click', function() {
+    if (confirm('¿Estás seguro de que quieres salir de la aplicación?')) {
+        window.close();
+    }
+});
 </script>
 
 </body>
