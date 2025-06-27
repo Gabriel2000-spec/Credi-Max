@@ -1,2 +1,2 @@
-# Pago-y-Sabor
+# Credi-Max
 Aplicacion para credito
